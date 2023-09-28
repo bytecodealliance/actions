@@ -4,11 +4,16 @@ import {download, getDownloadLink, resolveVersion, verify} from './action'
 
 async function run(): Promise<void> {
   try {
-    const version = await resolveVersion(WASMTIME_ORG, WASM_TOOLS_REPO)
+    const tag = await resolveVersion(WASMTIME_ORG, WASM_TOOLS_REPO)
+
+    // wasm-tools releases have a prefix of wasm-tools
+    // therefore remove wasm-tools prefix to get just version
+    const version = tag.replace('wasm-tools-', '')
+
     const downloadLink = await getDownloadLink(
       WASMTIME_ORG,
       WASM_TOOLS_REPO,
-      version.startsWith('wasm-tools-') ? version : `wasm-tools-${version}`
+      `wasm-tools-${version}`
     )
 
     const binName = 'wasm-tools'

@@ -17006,8 +17006,11 @@ const action_1 = __nccwpck_require__(7672);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const version = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO);
-            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, version.startsWith('wasm-tools-') ? version : `wasm-tools-${version}`);
+            const tag = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO);
+            // wasm-tools releases have a prefix of wasm-tools
+            // therefore remove wasm-tools prefix to get just version
+            const version = tag.replace('wasm-tools-', '');
+            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, `wasm-tools-${version}`);
             const binName = 'wasm-tools';
             yield (0, action_1.download)(binName, version, downloadLink);
             yield (0, action_1.verify)(binName);
