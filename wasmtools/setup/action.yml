@@ -1,0 +1,14 @@
+name: 'Setup wasm-tools'
+description: 'Set up your GitHub Actions workflow with a specific version of wasm-tools'
+author: 'Rajat Jindal<rajatjindal83@gmail.com>'
+inputs:
+  version:
+    required: false
+    description: 'version of wasm-tools to setup'
+    default: latest
+  github_token:
+    required: false
+    description: 'When downloading wasmtime, GitHub may rate limit anonymous downloads. Set this to use authenticated downloads, which are are subject to a higher limits.'
+runs:
+  using: 'node16'
+  main: '../../dist/wasm-tools/setup/index.js'

@@ -16627,7 +16627,7 @@ function getLatestRelease(owner, repo) {
     });
 }
 exports.getLatestRelease = getLatestRelease;
-function getDownloadLink(owner, repo, version) {
+function getDownloadLink(owner, repo, tag_name) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('github_token');
         const octokit = (() => {
@@ -16636,14 +16636,14 @@ function getDownloadLink(owner, repo, version) {
         const platform = (0, system_1.getPlatform)();
         const arch = (0, system_1.getArch)();
         const allReleases = yield octokit.rest.repos.listReleases({ owner, repo });
-        const release = allReleases.data.find(item => item.tag_name === version);
+        const release = allReleases.data.find(item => item.tag_name === tag_name);
         if (!release) {
-            throw new Error(`failed to find release for version '${version}' for platform '${platform}' and arch '${arch}'`);
+            throw new Error(`failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);
         }
         const archiveExtension = (0, system_1.getPlatform)() === 'windows' ? '.zip' : '.tar.xz';
         const asset = release.assets.find(item => item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`));
         if (!asset) {
-            throw new Error(`failed to find asset for version '${version}' for platform '${platform}' and arch '${arch}'`);
+            throw new Error(`failed to find asset for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);
         }
         return asset.browser_download_url;
     });

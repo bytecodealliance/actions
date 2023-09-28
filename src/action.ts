@@ -54,7 +54,7 @@ export async function getLatestRelease(
 export async function getDownloadLink(
   owner: string,
   repo: string,
-  version: string
+  tag_name: string
 ): Promise<string> {
   const token = core.getInput('github_token')
   const octokit = (() => {
@@ -65,10 +65,10 @@ export async function getDownloadLink(
   const arch = getArch()
 
   const allReleases = await octokit.rest.repos.listReleases({owner, repo})
-  const release = allReleases.data.find(item => item.tag_name === version)
+  const release = allReleases.data.find(item => item.tag_name === tag_name)
   if (!release) {
     throw new Error(
-      `failed to find release for version '${version}' for platform '${platform}' and arch '${arch}'`
+      `failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`
     )
   }
 
@@ -79,7 +79,7 @@ export async function getDownloadLink(
 
   if (!asset) {
     throw new Error(
-      `failed to find asset for version '${version}' for platform '${platform}' and arch '${arch}'`
+      `failed to find asset for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`
     )
   }
 

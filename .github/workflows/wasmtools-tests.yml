@@ -1,0 +1,87 @@
+name: setup wasm-tools e2e tests
+on:
+  pull_request:
+    branches: [main]
+
+  push:
+    branches: [main]
+
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      
+      - name: npm install
+        run: npm install
+
+      - name: npm run build
+        run: npm run package
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: setup-wasm-tools
+          path: dist/wasm-tools/setup/index.js
+
+  setup-default-wasm-tools:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Retrieve saved Github action
+        uses: actions/download-artifact@v3
+        with:
+          name: setup-wasm-tools
+          path: dist/wasm-tools/setup/
+
+      - name: setup wasm-tools
+        uses: ./wasm-tools/setup/
+        with:
+          github_token: ${{ github.token }}
+
+      - name: verify wasm-tools setup
+        run: wasm-tools --version
+
+  setup-specific-wasm-tools-version:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Retrieve saved Github action
+        uses: actions/download-artifact@v3
+        with:
+          name: setup-wasm-tools
+          path: dist/wasm-tools/setup/
+
+      - name: setup wasm-tools
+        uses: ./wasm-tools/setup/
+        with:
+          version: "1.0.43"
+          github_token: ${{ github.token }}
+
+      - name: wasm-tools setup successful
+        if: ${{ contains(env.WASM_TOOLS_VERSION, '1.0.43') }}
+        run: echo "wasm-tools setup successful"
+
+      - name: wasm-tools setup failed
+        if: ${{ !contains(env.WASM_TOOLS_VERSION, '1.0.43') }}
+        run: |
+          echo "expected version: 1.0.43, found: ${{ env.WASM_TOOLS_VERSION }}"
+          exit 1
