@@ -16664,7 +16664,6 @@ function verify(name) {
         if (result.exitCode !== 0) {
             throw new Error(`failed while verifying ${name} version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`);
         }
-        core.info(result.stdout);
         core.exportVariable(`${getEnvKey(name)}_VERSION`, result.stdout);
     });
 }

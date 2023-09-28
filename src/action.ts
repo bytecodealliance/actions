@@ -110,7 +110,6 @@ export async function verify(name: string): Promise<void> {
     )
   }
 
-  core.info(result.stdout)
   core.exportVariable(`${getEnvKey(name)}_VERSION`, result.stdout)
 }
 
