@@ -16640,7 +16640,8 @@ function getDownloadLink(owner, repo, tag_name) {
         if (!release) {
             throw new Error(`failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);
         }
-        const archiveExtension = (0, system_1.getPlatform)() === 'windows' ? '.zip' : '.tar.xz';
+        // the archive extension could be .tar.gz (for wasm-tools) or .tar.xz (for wasmtime)
+        const archiveExtension = (0, system_1.getPlatform)() === 'windows' ? '.zip' : '.tar.';
         const asset = release.assets.find(item => item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`));
         if (!asset) {
             throw new Error(`failed to find asset for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);

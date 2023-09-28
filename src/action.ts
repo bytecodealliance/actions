@@ -72,7 +72,8 @@ export async function getDownloadLink(
     )
   }
 
-  const archiveExtension = getPlatform() === 'windows' ? '.zip' : '.tar.xz'
+  // the archive extension could be .tar.gz (for wasm-tools) or .tar.xz (for wasmtime)
+  const archiveExtension = getPlatform() === 'windows' ? '.zip' : '.tar.'
   const asset = release.assets.find(item =>
     item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`)
   )
