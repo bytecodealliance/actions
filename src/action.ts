@@ -4,19 +4,16 @@ import {getArch, getPlatform} from './system'
 import {Downloader} from './download'
 import {Octokit} from '@octokit/rest'
 
-const WASMTIME_ORG = 'bytecodealliance'
-const WASMTIME_REPO = 'wasmtime'
+const ASSET_ARCHIVE_PATTERN = `${getArch()}-${getPlatform()}`
 
-export async function resolveVersion(): Promise<string> {
+export async function resolveVersion(
+  owner: string,
+  repo: string
+): Promise<string> {
   let version = core.getInput('version')
 
   if (!version || version === 'latest') {
-    version = await getLatestRelease(
-      WASMTIME_ORG,
-      WASMTIME_REPO,
-      getPlatform(),
-      getArch()
-    )
+    version = await getLatestRelease(owner, repo)
   }
 
   return version
@@ -24,14 +21,15 @@ export async function resolveVersion(): Promise<string> {
 
 export async function getLatestRelease(
   owner: string,
-  repo: string,
-  platform: string,
-  arch: string
+  repo: string
 ): Promise<string> {
   const token = core.getInput('github_token')
   const octokit = (() => {
     return token ? new Octokit({auth: token}) : new Octokit()
   })()
+
+  const platform = getPlatform()
+  const arch = getArch()
 
   core.info(
     `finding latest release for platform ${platform} and architecture ${arch}`
@@ -41,7 +39,7 @@ export async function getLatestRelease(
   const release = allReleases.data.find(
     item =>
       !item.prerelease &&
-      item.assets.find(asset => asset.name.includes(`${arch}-${platform}.`))
+      item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN))
   )
 
   if (!release) {
@@ -53,20 +51,20 @@ export async function getLatestRelease(
   return release.tag_name
 }
 
-export async function getDownloadLink(version: string): Promise<string> {
+export async function getDownloadLink(
+  owner: string,
+  repo: string,
+  version: string
+): Promise<string> {
   const token = core.getInput('github_token')
   const octokit = (() => {
     return token ? new Octokit({auth: token}) : new Octokit()
   })()
 
-  const allReleases = await octokit.rest.repos.listReleases({
-    owner: WASMTIME_ORG,
-    repo: WASMTIME_REPO
-  })
-
   const platform = getPlatform()
   const arch = getArch()
 
+  const allReleases = await octokit.rest.repos.listReleases({owner, repo})
   const release = allReleases.data.find(item => item.tag_name === version)
   if (!release) {
     throw new Error(
@@ -76,7 +74,7 @@ export async function getDownloadLink(version: string): Promise<string> {
 
   const archiveExtension = getPlatform() === 'windows' ? '.zip' : '.tar.xz'
   const asset = release.assets.find(item =>
-    item.name.includes(`${arch}-${platform}${archiveExtension}`)
+    item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`)
   )
 
   if (!asset) {
@@ -88,25 +86,29 @@ export async function getDownloadLink(version: string): Promise<string> {
   return asset.browser_download_url
 }
 
-export async function download(version: string, link: string): Promise<void> {
+export async function download(
+  name: string,
+  version: string,
+  link: string
+): Promise<void> {
   const binaryExtension = getPlatform() === 'windows' ? '.exe' : ''
   const downloader = new Downloader(
-    `wasmtime${binaryExtension}`,
+    `${name}${binaryExtension}`,
     link,
-    `wasmtime-${version}-x86_64-${getPlatform()}/wasmtime${binaryExtension}`
+    `${name}-${version}-${ASSET_ARCHIVE_PATTERN}/${name}${binaryExtension}`
   )
 
   await downloader.download()
 }
 
-export async function verify(): Promise<void> {
-  const result = await exec.getExecOutput('wasmtime', ['--version'])
+export async function verify(name: string): Promise<void> {
+  const result = await exec.getExecOutput(name, ['--version'])
   if (result.exitCode !== 0) {
     throw new Error(
-      `failed while verifying wasmtime version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`
+      `failed while verifying ${name} version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`
     )
   }
 
   core.info(result.stdout)
-  core.exportVariable('WASMTIME_VERSION', result.stdout)
+  core.exportVariable(`${name.toUpperCase()}_VERSION`, result.stdout)
 }

@@ -16597,28 +16597,29 @@ const exec = __importStar(__nccwpck_require__(1514));
 const system_1 = __nccwpck_require__(4300);
 const download_1 = __nccwpck_require__(6232);
 const rest_1 = __nccwpck_require__(5375);
-const WASMTIME_ORG = 'bytecodealliance';
-const WASMTIME_REPO = 'wasmtime';
-function resolveVersion() {
+const ASSET_ARCHIVE_PATTERN = `${(0, system_1.getArch)()}-${(0, system_1.getPlatform)()}`;
+function resolveVersion(owner, repo) {
     return __awaiter(this, void 0, void 0, function* () {
         let version = core.getInput('version');
         if (!version || version === 'latest') {
-            version = yield getLatestRelease(WASMTIME_ORG, WASMTIME_REPO, (0, system_1.getPlatform)(), (0, system_1.getArch)());
+            version = yield getLatestRelease(owner, repo);
         }
         return version;
     });
 }
 exports.resolveVersion = resolveVersion;
-function getLatestRelease(owner, repo, platform, arch) {
+function getLatestRelease(owner, repo) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('github_token');
         const octokit = (() => {
             return token ? new rest_1.Octokit({ auth: token }) : new rest_1.Octokit();
         })();
+        const platform = (0, system_1.getPlatform)();
+        const arch = (0, system_1.getArch)();
         core.info(`finding latest release for platform ${platform} and architecture ${arch}`);
         const allReleases = yield octokit.rest.repos.listReleases({ owner, repo });
         const release = allReleases.data.find(item => !item.prerelease &&
-            item.assets.find(asset => asset.name.includes(`${arch}-${platform}.`)));
+            item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN)));
         if (!release) {
             throw new Error(`no releases found for platform ${platform} and architecture ${arch}`);
         }
@@ -16626,24 +16627,21 @@ function getLatestRelease(owner, repo, platform, arch) {
     });
 }
 exports.getLatestRelease = getLatestRelease;
-function getDownloadLink(version) {
+function getDownloadLink(owner, repo, version) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('github_token');
         const octokit = (() => {
             return token ? new rest_1.Octokit({ auth: token }) : new rest_1.Octokit();
         })();
-        const allReleases = yield octokit.rest.repos.listReleases({
-            owner: WASMTIME_ORG,
-            repo: WASMTIME_REPO
-        });
         const platform = (0, system_1.getPlatform)();
         const arch = (0, system_1.getArch)();
+        const allReleases = yield octokit.rest.repos.listReleases({ owner, repo });
         const release = allReleases.data.find(item => item.tag_name === version);
         if (!release) {
             throw new Error(`failed to find release for version '${version}' for platform '${platform}' and arch '${arch}'`);
         }
         const archiveExtension = (0, system_1.getPlatform)() === 'windows' ? '.zip' : '.tar.xz';
-        const asset = release.assets.find(item => item.name.includes(`${arch}-${platform}${archiveExtension}`));
+        const asset = release.assets.find(item => item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`));
         if (!asset) {
             throw new Error(`failed to find asset for version '${version}' for platform '${platform}' and arch '${arch}'`);
         }
@@ -16651,22 +16649,22 @@ function getDownloadLink(version) {
     });
 }
 exports.getDownloadLink = getDownloadLink;
-function download(version, link) {
+function download(name, version, link) {
     return __awaiter(this, void 0, void 0, function* () {
         const binaryExtension = (0, system_1.getPlatform)() === 'windows' ? '.exe' : '';
-        const downloader = new download_1.Downloader(`wasmtime${binaryExtension}`, link, `wasmtime-${version}-x86_64-${(0, system_1.getPlatform)()}/wasmtime${binaryExtension}`);
+        const downloader = new download_1.Downloader(`${name}${binaryExtension}`, link, `${name}-${version}-${ASSET_ARCHIVE_PATTERN}/${name}${binaryExtension}`);
         yield downloader.download();
     });
 }
 exports.download = download;
-function verify() {
+function verify(name) {
     return __awaiter(this, void 0, void 0, function* () {
-        const result = yield exec.getExecOutput('wasmtime', ['--version']);
+        const result = yield exec.getExecOutput(name, ['--version']);
         if (result.exitCode !== 0) {
-            throw new Error(`failed while verifying wasmtime version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`);
+            throw new Error(`failed while verifying ${name} version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`);
         }
         core.info(result.stdout);
-        core.exportVariable('WASMTIME_VERSION', result.stdout);
+        core.exportVariable(`${name.toUpperCase()}_VERSION`, result.stdout);
     });
 }
 exports.verify = verify;
@@ -16899,61 +16897,16 @@ exports.binPath = binPath;
 
 /***/ }),
 
-/***/ 399:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 978:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
-const action_1 = __nccwpck_require__(7672);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const version = yield (0, action_1.resolveVersion)();
-            const downloadLink = yield (0, action_1.getDownloadLink)(version);
-            yield (0, action_1.download)(version, downloadLink);
-            yield (0, action_1.verify)();
-        }
-        catch (error) {
-            if (error instanceof Error)
-                core.setFailed(error.message);
-        }
-    });
-}
-run();
+exports.WASM_TOOLS_REPO = exports.WASMTIME_REPO = exports.WASMTIME_ORG = void 0;
+exports.WASMTIME_ORG = 'bytecodealliance';
+exports.WASMTIME_REPO = 'wasmtime';
+exports.WASM_TOOLS_REPO = 'wasm-tools';
 
 
 /***/ }),
@@ -17002,6 +16955,67 @@ function getArch() {
     }
 }
 exports.getArch = getArch;
+
+
+/***/ }),
+
+/***/ 2483:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github_1 = __nccwpck_require__(978);
+const action_1 = __nccwpck_require__(7672);
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const version = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO);
+            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO, version);
+            const binName = 'wasmtime';
+            yield (0, action_1.download)(binName, version, downloadLink);
+            yield (0, action_1.verify)(binName);
+        }
+        catch (error) {
+            if (error instanceof Error)
+                core.setFailed(error.message);
+        }
+    });
+}
+run();
 
 
 /***/ }),
@@ -17216,7 +17230,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(399);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(2483);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()
