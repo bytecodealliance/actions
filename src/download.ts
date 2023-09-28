@@ -1,5 +1,6 @@
 /*
-  this code is taken from engineerd/configurator which is MIT licensed
+  this code is taken from github.com/engineerd/configurator which is MIT licensed
+  //TODO: move this code to reusable lib
 */
 
 import * as core from '@actions/core'

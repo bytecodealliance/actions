@@ -16681,7 +16681,8 @@ function getEnvKey(name) {
 "use strict";
 
 /*
-  this code is taken from engineerd/configurator which is MIT licensed
+  this code is taken from github.com/engineerd/configurator which is MIT licensed
+  //TODO: move this code to reusable lib
 */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
