@@ -111,9 +111,9 @@ export async function verify(name: string): Promise<void> {
   }
 
   core.info(result.stdout)
-  core.exportVariable(getEnvKey(name), result.stdout)
+  core.exportVariable(`${getEnvKey(name)}_VERSION`, result.stdout)
 }
 
 function getEnvKey(name: string): string {
-  return `${name.toUpperCase()}_VERSION`.replace('-', '_')
+  return name.toUpperCase().replace('-', '_')
 }

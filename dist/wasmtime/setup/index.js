@@ -16665,12 +16665,12 @@ function verify(name) {
             throw new Error(`failed while verifying ${name} version.\n[stdout: ${result.stdout}] [stderr: ${result.stderr}]`);
         }
         core.info(result.stdout);
-        core.exportVariable(getEnvKey(name), result.stdout);
+        core.exportVariable(`${getEnvKey(name)}_VERSION`, result.stdout);
     });
 }
 exports.verify = verify;
 function getEnvKey(name) {
-    return `${name.toUpperCase()}_VERSION`.replace('-', '_');
+    return name.toUpperCase().replace('-', '_');
 }
 
 
