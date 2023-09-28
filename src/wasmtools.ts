@@ -8,7 +8,7 @@ async function run(): Promise<void> {
     const downloadLink = await getDownloadLink(
       WASMTIME_ORG,
       WASM_TOOLS_REPO,
-      `wasm-tools-${version}`
+      version.startsWith('wasm-tools-') ? version : `wasm-tools-${version}`
     )
 
     const binName = 'wasm-tools'

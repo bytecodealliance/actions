@@ -17007,7 +17007,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const version = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO);
-            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, `wasm-tools-${version}`);
+            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, version.startsWith('wasm-tools-') ? version : `wasm-tools-${version}`);
             const binName = 'wasm-tools';
             yield (0, action_1.download)(binName, version, downloadLink);
             yield (0, action_1.verify)(binName);
