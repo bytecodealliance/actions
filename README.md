@@ -1,16 +1,15 @@
-# `bytecodelliance/actions` - GitHub Action collection for setting up wasmtime/wasm-tools
-
+# bytecodelliance/actions
 
 With the `bytecodealliance/actions` collection, you can easily setup [wasmtime](https://github.com/bytecodealliance/wasmtime) and [wasm-tools](https://github.com/bytecodealliance/wasm-tools) in your [GitHub Action](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/configuring-a-workflow). 
 
 This collection of Actions enables the following use cases:
 
-- [x] set up wasmtime using [`bytecodealliance/actions/wasmtime/setup@v1`](#install-wasmtime-cli---bytecodeallianceactionswasmtimesetupv1)
-- [x] set up wasm-tools using [`bytecodealliance/actions/wasm-tools/setup@v1`](#install-wasm-tools-cli---bytecodeallianceactionswasm-toolssetupv1)
+- [x] set up wasmtime using [`bytecodealliance/actions/wasmtime/setup@v1`](#install-wasmtime)
+- [x] set up wasm-tools using [`bytecodealliance/actions/wasm-tools/setup@v1`](#install-wasm-tools)
 
 Let's take a look at each one to learn about the required inputs and walk through an example. 
 
-## Install wasmtime - `bytecodealliance/actions/wasmtime/setup@v1`
+## Install wasmtime
 
 ### Inputs
 
@@ -67,7 +66,7 @@ jobs:
 ```
 
 
-## Install wasm-tools - `bytecodealliance/actions/wasm-tools/setup@v1`
+## Install wasm-tools
 
 ### Inputs
 
