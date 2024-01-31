@@ -16907,10 +16907,11 @@ exports.binPath = binPath;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WASM_TOOLS_REPO = exports.WASMTIME_REPO = exports.WASMTIME_ORG = void 0;
+exports.WIT_BINDGEN_REPO = exports.WASM_TOOLS_REPO = exports.WASMTIME_REPO = exports.WASMTIME_ORG = void 0;
 exports.WASMTIME_ORG = 'bytecodealliance';
 exports.WASMTIME_REPO = 'wasmtime';
 exports.WASM_TOOLS_REPO = 'wasm-tools';
+exports.WIT_BINDGEN_REPO = 'wit-bindgen';
 
 
 /***/ }),
