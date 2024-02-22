@@ -17011,10 +17011,19 @@ function run() {
             const tag = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WIT_BINDGEN_REPO);
             // wit-bindgen releases have a prefix of wit-bindgen-cli
             // therefore remove wit-bindgen-cli prefix to get just version
-            const version = tag.replace('wit-bindgen-cli-', '');
-            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WIT_BINDGEN_REPO, `wit-bindgen-cli-${version}`);
+            const version = tag.replace('wit-bindgen-cli-', '').replace(/^v/, '');
+            let binVersion = version;
+            let downloadLink;
+            try {
+                downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WIT_BINDGEN_REPO, `v${version}`);
+            }
+            catch (error) {
+                // Try legacy tag format
+                downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WIT_BINDGEN_REPO, `wit-bindgen-cli-${version}`);
+                binVersion = `v${version}`;
+            }
             const binName = 'wit-bindgen';
-            yield (0, action_1.download)(binName, `v${version}`, downloadLink);
+            yield (0, action_1.download)(binName, binVersion, downloadLink);
             yield (0, action_1.verify)(binName);
         }
         catch (error) {

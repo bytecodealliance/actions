@@ -8,13 +8,23 @@ async function run(): Promise<void> {
 
     // wasm-tools releases have a prefix of wasm-tools
     // therefore remove wasm-tools prefix to get just version
-    const version = tag.replace('wasm-tools-', '')
+    const version = tag.replace('wasm-tools-', '').replace(/^v/, '')
 
-    const downloadLink = await getDownloadLink(
-      WASMTIME_ORG,
-      WASM_TOOLS_REPO,
-      `wasm-tools-${version}`
-    )
+    let downloadLink
+    try {
+      downloadLink = await getDownloadLink(
+        WASMTIME_ORG,
+        WASM_TOOLS_REPO,
+        `v${version}`
+      )
+    } catch (error) {
+      // Try legacy tag format
+      downloadLink = await getDownloadLink(
+        WASMTIME_ORG,
+        WASM_TOOLS_REPO,
+        `wasm-tools-${version}`
+      )
+    }
 
     const binName = 'wasm-tools'
     await download(binName, version, downloadLink)
