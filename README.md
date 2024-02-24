@@ -1,6 +1,6 @@
 # bytecodelliance/actions
 
-With the `bytecodealliance/actions` collection, you can easily setup [wasmtime](https://github.com/bytecodealliance/wasmtime), [wasm-tools](https://github.com/bytecodealliance/wasm-tools), and [wit-bindgen](https://github.com/bytecodealliance/wit-bindgen) in your [GitHub Action](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/configuring-a-workflow).
+With the `bytecodealliance/actions` collection, you can easily set up [`wasmtime`](https://github.com/bytecodealliance/wasmtime), [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and [`wit-bindgen`](https://github.com/bytecodealliance/wit-bindgen) in your [GitHub Actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/configuring-a-workflow) workflow.
 
 This collection of Actions enables the following use cases:
 
