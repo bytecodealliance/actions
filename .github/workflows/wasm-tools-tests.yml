@@ -49,8 +49,6 @@ jobs:
 
       - name: setup wasm-tools
         uses: ./wasm-tools/setup/
-        with:
-          github_token: ${{ github.token }}
 
       - name: verify wasm-tools setup
         run: wasm-tools --version
@@ -75,7 +73,6 @@ jobs:
         uses: ./wasm-tools/setup/
         with:
           version: ${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wasm-tools setup successful
         if: ${{ contains(env.WASM_TOOLS_VERSION, matrix.version) }}
@@ -107,7 +104,6 @@ jobs:
         uses: ./wasm-tools/setup/
         with:
           version: v${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wasm-tools setup successful
         if: ${{ contains(env.WASM_TOOLS_VERSION, matrix.version) }}

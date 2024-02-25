@@ -49,8 +49,6 @@ jobs:
 
       - name: setup wasmtime
         uses: ./wasmtime/setup/
-        with:
-          github_token: ${{ github.token }}
 
       - name: verify wasmtime setup
         run: wasmtime --version
@@ -75,13 +73,11 @@ jobs:
         uses: ./wasmtime/setup/
         with:
           version: ${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: setup wasmtime with v
         uses: ./wasmtime/setup/
         with:
           version: v${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wasmtime setup successful
         if: ${{ contains(env.WASMTIME_VERSION, matrix.version) }}
@@ -113,7 +109,6 @@ jobs:
         uses: ./wasmtime/setup/
         with:
           version: v${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wasmtime setup successful
         if: ${{ contains(env.WASMTIME_VERSION, matrix.version) }}

@@ -9,6 +9,7 @@ inputs:
   github_token:
     required: false
     description: 'When downloading wasm-tools, GitHub may rate limit anonymous downloads. Set this to use authenticated downloads, which are are subject to a higher limits.'
+    default: ${{ github.token }}
 runs:
   using: 'node20'
   main: '../../dist/wasm-tools/setup/index.js'
