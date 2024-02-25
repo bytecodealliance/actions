@@ -4,7 +4,8 @@ import {download, getDownloadLink, resolveVersion, verify} from './action'
 
 async function run(): Promise<void> {
   try {
-    const version = await resolveVersion(WASMTIME_ORG, WASMTIME_REPO)
+    const tag = await resolveVersion(WASMTIME_ORG, WASMTIME_REPO)
+    const version = `v${tag.replace(/^v/, '')}`
     const downloadLink = await getDownloadLink(
       WASMTIME_ORG,
       WASMTIME_REPO,

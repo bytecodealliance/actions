@@ -17008,7 +17008,8 @@ const action_1 = __nccwpck_require__(7672);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const version = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO);
+            const tag = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO);
+            const version = `v${tag.replace(/^v/, '')}`;
             const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO, version);
             const binName = 'wasmtime';
             yield (0, action_1.download)(binName, version, downloadLink);

@@ -7,7 +7,7 @@
     "format": "prettier --write '**/*.ts'",
     "format-check": "prettier --check '**/*.ts'",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build -o dist/wasmtime/setup src/wasmtime.ts && ncc build -o dist/wasm-tools/setup src/wasmtools.ts && ncc build -o dist/wit-bindgen/setup src/wit-bindgen.ts",
+    "package": "ncc build -o dist/wasmtime/setup src/wasmtime.ts && ncc build -o dist/wasm-tools/setup src/wasm-tools.ts && ncc build -o dist/wit-bindgen/setup src/wit-bindgen.ts",
     "test": "jest",
     "all": "npm run build && npm run format && npm run package"
   },

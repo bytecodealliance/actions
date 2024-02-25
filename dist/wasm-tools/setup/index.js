@@ -16964,7 +16964,7 @@ exports.getArch = getArch;
 
 /***/ }),
 
-/***/ 3263:
+/***/ 8389:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -17011,8 +17011,15 @@ function run() {
             const tag = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO);
             // wasm-tools releases have a prefix of wasm-tools
             // therefore remove wasm-tools prefix to get just version
-            const version = tag.replace('wasm-tools-', '');
-            const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, `wasm-tools-${version}`);
+            const version = tag.replace('wasm-tools-', '').replace(/^v/, '');
+            let downloadLink;
+            try {
+                downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, `v${version}`);
+            }
+            catch (error) {
+                // Try legacy tag format
+                downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASM_TOOLS_REPO, `wasm-tools-${version}`);
+            }
             const binName = 'wasm-tools';
             yield (0, action_1.download)(binName, version, downloadLink);
             yield (0, action_1.verify)(binName);
@@ -17238,7 +17245,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(3263);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(8389);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()
