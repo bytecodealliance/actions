@@ -49,8 +49,6 @@ jobs:
 
       - name: setup wit-bindgen
         uses: ./wit-bindgen/setup/
-        with:
-          github_token: ${{ github.token }}
 
       - name: verify wit-bindgen setup
         run: wit-bindgen --version
@@ -75,7 +73,6 @@ jobs:
         uses: ./wit-bindgen/setup/
         with:
           version: ${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wit-bindgen setup successful
         if: ${{ contains(env.WIT_BINDGEN_VERSION, matrix.version) }}
@@ -107,7 +104,6 @@ jobs:
         uses: ./wit-bindgen/setup/
         with:
           version: v${{ matrix.version }}
-          github_token: ${{ github.token }}
 
       - name: wit-bindgen setup successful
         if: ${{ contains(env.WIT_BINDGEN_VERSION, matrix.version) }}

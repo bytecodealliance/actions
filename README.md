@@ -17,7 +17,7 @@ Let’s take a look at each one to learn about the required inputs and walk thro
 | Name         | Required | Default | Description                                                                                                                                 |
 | ------------ | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `version`      | False    | `latest`  | The version of `wasmtime` to install.                                                                                                           |
-| `github_token` | False    | -       | The GitHub token for querying/downloading `wasmtime` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions |
+| `github_token` | False    | `${{ github.token }}`       | The GitHub token for querying/downloading `wasmtime` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions. |
 
 ### Examples
 
@@ -73,7 +73,7 @@ jobs:
 | Name         | Required | Default | Description                                                                                                                                 |
 | ------------ | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `version`      | False    | `latest`  | The version of `wasm-tools` to install.                                                                                                           |
-| `github_token` | False    | -       | The GitHub token for querying/downloading `wasm-tools` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions |
+| `github_token` | False    | `${{ github.token }}`       | The GitHub token for querying/downloading `wasm-tools` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions |
 
 ### Examples
 
@@ -128,7 +128,7 @@ jobs:
 | Name         | Required | Default | Description                                                                                                                                 |
 | ------------ | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `version`      | False    | `latest`  | The version of `wit-bindgen` to install.                                                                                                           |
-| `github_token` | False    | -       | The GitHub token for querying/downloading `wit-bindgen` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions |
+| `github_token` | False    | `${{ github.token }}`       | The GitHub token for querying/downloading `wit-bindgen` releases. If provided, it avoids GitHub API rate limiting during GitHub action executions |
 
 ### Examples
 
