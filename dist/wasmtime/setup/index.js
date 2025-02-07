@@ -16590,6 +16590,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verify = exports.download = exports.getDownloadLink = exports.getLatestRelease = exports.resolveVersion = void 0;
 const core = __importStar(__nccwpck_require__(2186));
@@ -16609,6 +16616,7 @@ function resolveVersion(owner, repo) {
 }
 exports.resolveVersion = resolveVersion;
 function getLatestRelease(owner, repo) {
+    var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('github_token');
         const octokit = (() => {
@@ -16617,11 +16625,35 @@ function getLatestRelease(owner, repo) {
         const platform = (0, system_1.getPlatform)();
         const arch = (0, system_1.getArch)();
         core.info(`finding latest release for platform ${platform} and architecture ${arch}`);
-        const release = yield octokit.rest.repos.getLatestRelease({ owner, repo });
-        if (!release) {
-            throw new Error(`no releases found for platform ${platform} and architecture ${arch}`);
+        // Note that `getLatestRelease` isn't used as the are some scenarios where the
+        // github-tagged latest release won't work (e.g. multiple release artifacts
+        // from the same repo).
+        const params = { owner, repo };
+        const iter = octokit.paginate.iterator(octokit.rest.repos.listReleases, params);
+        try {
+            for (var _d = true, iter_1 = __asyncValues(iter), iter_1_1; iter_1_1 = yield iter_1.next(), _a = iter_1_1.done, !_a;) {
+                _c = iter_1_1.value;
+                _d = false;
+                try {
+                    const releases = _c;
+                    const release = releases.data.find(item => !item.prerelease &&
+                        item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN)));
+                    if (release)
+                        return release.tag_name;
+                }
+                finally {
+                    _d = true;
+                }
+            }
         }
-        return release.data.tag_name;
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (!_d && !_a && (_b = iter_1.return)) yield _b.call(iter_1);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        throw new Error(`no releases found for platform ${platform} and architecture ${arch}`);
     });
 }
 exports.getLatestRelease = getLatestRelease;

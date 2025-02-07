@@ -35,15 +35,24 @@ export async function getLatestRelease(
     `finding latest release for platform ${platform} and architecture ${arch}`
   )
 
-  const release = await octokit.rest.repos.getLatestRelease({owner, repo});
-
-  if (!release) {
-    throw new Error(
-      `no releases found for platform ${platform} and architecture ${arch}`
+  // Note that `getLatestRelease` isn't used as the are some scenarios where the
+  // github-tagged latest release won't work (e.g. multiple release artifacts
+  // from the same repo).
+  const params = {owner, repo};
+  const iter = octokit.paginate.iterator(octokit.rest.repos.listReleases, params);
+  for await (const releases of iter) {
+    const release = releases.data.find(
+      item =>
+        !item.prerelease &&
+        item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN))
     )
+    if (release)
+      return release.tag_name;
   }
 
-  return release.data.tag_name
+  throw new Error(
+    `no releases found for platform ${platform} and architecture ${arch}`
+  )
 }
 
 export async function getDownloadLink(
