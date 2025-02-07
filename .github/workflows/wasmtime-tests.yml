@@ -12,9 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 19
 
@@ -27,7 +27,7 @@ jobs:
           NODE_OPTIONS: --openssl-legacy-provider
 
       - name: upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: setup-wasmtime
           path: dist/wasmtime/setup/index.js
@@ -39,10 +39,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Retrieve saved Github action
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: setup-wasmtime
           path: dist/wasmtime/setup/
@@ -61,10 +61,10 @@ jobs:
         version: ["12.0.0", "17.0.0"]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Retrieve saved Github action
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: setup-wasmtime
           path: dist/wasmtime/setup/
@@ -97,10 +97,10 @@ jobs:
         version: ["12.0.0", "17.0.0"]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Retrieve saved Github action
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: setup-wasmtime
           path: dist/wasmtime/setup/
