@@ -16617,13 +16617,11 @@ function getLatestRelease(owner, repo) {
         const platform = (0, system_1.getPlatform)();
         const arch = (0, system_1.getArch)();
         core.info(`finding latest release for platform ${platform} and architecture ${arch}`);
-        const allReleases = yield octokit.rest.repos.listReleases({ owner, repo });
-        const release = allReleases.data.find(item => !item.prerelease &&
-            item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN)));
+        const release = yield octokit.rest.repos.getLatestRelease({ owner, repo });
         if (!release) {
             throw new Error(`no releases found for platform ${platform} and architecture ${arch}`);
         }
-        return release.tag_name;
+        return release.data.tag_name;
     });
 }
 exports.getLatestRelease = getLatestRelease;
@@ -16635,14 +16633,13 @@ function getDownloadLink(owner, repo, tag_name) {
         })();
         const platform = (0, system_1.getPlatform)();
         const arch = (0, system_1.getArch)();
-        const allReleases = yield octokit.rest.repos.listReleases({ owner, repo });
-        const release = allReleases.data.find(item => item.tag_name === tag_name);
+        const release = yield octokit.rest.repos.getReleaseByTag({ owner, repo, tag: tag_name });
         if (!release) {
             throw new Error(`failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);
         }
         // the archive extension could be .tar.gz (for wasm-tools) or .tar.xz (for wasmtime)
         const archiveExtension = (0, system_1.getPlatform)() === 'windows' ? '.zip' : '.tar.';
-        const asset = release.assets.find(item => item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`));
+        const asset = release.data.assets.find(item => item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`));
         if (!asset) {
             throw new Error(`failed to find asset for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`);
         }

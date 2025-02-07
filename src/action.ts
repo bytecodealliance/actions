@@ -35,12 +35,7 @@ export async function getLatestRelease(
     `finding latest release for platform ${platform} and architecture ${arch}`
   )
 
-  const allReleases = await octokit.rest.repos.listReleases({owner, repo})
-  const release = allReleases.data.find(
-    item =>
-      !item.prerelease &&
-      item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN))
-  )
+  const release = await octokit.rest.repos.getLatestRelease({owner, repo});
 
   if (!release) {
     throw new Error(
@@ -48,7 +43,7 @@ export async function getLatestRelease(
     )
   }
 
-  return release.tag_name
+  return release.data.tag_name
 }
 
 export async function getDownloadLink(
@@ -64,8 +59,7 @@ export async function getDownloadLink(
   const platform = getPlatform()
   const arch = getArch()
 
-  const allReleases = await octokit.rest.repos.listReleases({owner, repo})
-  const release = allReleases.data.find(item => item.tag_name === tag_name)
+  const release = await octokit.rest.repos.getReleaseByTag({owner, repo, tag: tag_name})
   if (!release) {
     throw new Error(
       `failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`
@@ -74,7 +68,7 @@ export async function getDownloadLink(
 
   // the archive extension could be .tar.gz (for wasm-tools) or .tar.xz (for wasmtime)
   const archiveExtension = getPlatform() === 'windows' ? '.zip' : '.tar.'
-  const asset = release.assets.find(item =>
+  const asset = release.data.assets.find(item =>
     item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`)
   )
 
