@@ -35,20 +35,24 @@ export async function getLatestRelease(
     `finding latest release for platform ${platform} and architecture ${arch}`
   )
 
-  const allReleases = await octokit.rest.repos.listReleases({owner, repo})
-  const release = allReleases.data.find(
-    item =>
-      !item.prerelease &&
-      item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN))
-  )
-
-  if (!release) {
-    throw new Error(
-      `no releases found for platform ${platform} and architecture ${arch}`
+  // Note that `getLatestRelease` isn't used as the are some scenarios where the
+  // github-tagged latest release won't work (e.g. multiple release artifacts
+  // from the same repo).
+  const params = {owner, repo};
+  const iter = octokit.paginate.iterator(octokit.rest.repos.listReleases, params);
+  for await (const releases of iter) {
+    const release = releases.data.find(
+      item =>
+        !item.prerelease &&
+        item.assets.find(asset => asset.name.includes(ASSET_ARCHIVE_PATTERN))
     )
+    if (release)
+      return release.tag_name;
   }
 
-  return release.tag_name
+  throw new Error(
+    `no releases found for platform ${platform} and architecture ${arch}`
+  )
 }
 
 export async function getDownloadLink(
@@ -64,8 +68,7 @@ export async function getDownloadLink(
   const platform = getPlatform()
   const arch = getArch()
 
-  const allReleases = await octokit.rest.repos.listReleases({owner, repo})
-  const release = allReleases.data.find(item => item.tag_name === tag_name)
+  const release = await octokit.rest.repos.getReleaseByTag({owner, repo, tag: tag_name})
   if (!release) {
     throw new Error(
       `failed to find release for tag '${tag_name}' for platform '${platform}' and arch '${arch}'`
@@ -74,7 +77,7 @@ export async function getDownloadLink(
 
   // the archive extension could be .tar.gz (for wasm-tools) or .tar.xz (for wasmtime)
   const archiveExtension = getPlatform() === 'windows' ? '.zip' : '.tar.'
-  const asset = release.assets.find(item =>
+  const asset = release.data.assets.find(item =>
     item.name.includes(`${ASSET_ARCHIVE_PATTERN}${archiveExtension}`)
   )
 
