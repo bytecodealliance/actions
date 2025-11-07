@@ -5,7 +5,10 @@ import {download, getDownloadLink, resolveVersion, verify} from './action'
 async function run(): Promise<void> {
   try {
     const tag = await resolveVersion(WASMTIME_ORG, WASMTIME_REPO)
-    const version = `v${tag.replace(/^v/, '')}`
+    let version = tag;
+    if (/^\d/.test(tag)) {
+      version = `v${tag}`;
+    }
     const downloadLink = await getDownloadLink(
       WASMTIME_ORG,
       WASMTIME_REPO,

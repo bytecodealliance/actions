@@ -17038,7 +17038,10 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const tag = yield (0, action_1.resolveVersion)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO);
-            const version = `v${tag.replace(/^v/, '')}`;
+            let version = tag;
+            if (/^\d/.test(tag)) {
+                version = `v${tag}`;
+            }
             const downloadLink = yield (0, action_1.getDownloadLink)(github_1.WASMTIME_ORG, github_1.WASMTIME_REPO, version);
             const binName = 'wasmtime';
             yield (0, action_1.download)(binName, version, downloadLink);
