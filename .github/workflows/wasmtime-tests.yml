@@ -58,7 +58,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        version: ["12.0.0", "17.0.0"]
+        version: ["12.0.0", "17.0.0", "dev"]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +76,7 @@ jobs:
 
       - name: setup wasmtime with v
         uses: ./wasmtime/setup/
+        if: ${{ matrix.version != 'dev' }}
         with:
           version: v${{ matrix.version }}
 
@@ -84,38 +85,7 @@ jobs:
         run: echo "wasmtime setup successful"
 
       - name: wasmtime setup failed
-        if: ${{ !contains(env.WASMTIME_VERSION, matrix.version) }}
-        run: |
-          echo "expected version: ${{ matrix.version }}, found: ${{ env.WASMTIME_VERSION }}"
-          exit 1
-
-  setup-v-version:
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        version: ["12.0.0", "17.0.0"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Retrieve saved Github action
-        uses: actions/download-artifact@v4
-        with:
-          name: setup-wasmtime
-          path: dist/wasmtime/setup/
-
-      - name: setup wasmtime with v-prefixed version
-        uses: ./wasmtime/setup/
-        with:
-          version: v${{ matrix.version }}
-
-      - name: wasmtime setup successful
-        if: ${{ contains(env.WASMTIME_VERSION, matrix.version) }}
-        run: echo "wasmtime setup successful"
-
-      - name: wasmtime setup failed
-        if: ${{ !contains(env.WASMTIME_VERSION, matrix.version) }}
+        if: ${{ matrix.version != 'dev' && !contains(env.WASMTIME_VERSION, matrix.version) }}
         run: |
           echo "expected version: ${{ matrix.version }}, found: ${{ env.WASMTIME_VERSION }}"
           exit 1
