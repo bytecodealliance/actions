@@ -10,7 +10,7 @@ import * as io from '@actions/io'
 import * as os from 'os'
 import * as path from 'path'
 import * as tc from '@actions/tool-cache'
-import {v4 as uuidv4} from 'uuid'
+import {randomUUID} from 'crypto'
 
 enum ArchiveType {
   None = '',
@@ -39,7 +39,7 @@ export class Downloader {
     core.info(`Downloading tool from ${downloadURL}`)
     let downloadPath: string | null = null
     let archivePath: string | null = null
-    const randomDir: string = uuidv4()
+    const randomDir: string = randomUUID()
     const tempDir = path.join(os.tmpdir(), 'tmp', 'runner', randomDir)
     core.info(`Creating tempdir ${tempDir}`)
     await io.mkdirP(tempDir)
@@ -87,7 +87,7 @@ export class Downloader {
     core.info(`Downloading tool from ${downloadURL}`)
     let downloadPath: string | null = null
     let archivePath: string | null = null
-    const randomDir: string = uuidv4()
+    const randomDir: string = randomUUID()
     const tempDir = path.join(os.tmpdir(), 'tmp', 'runner', randomDir)
     core.info(`Creating tempdir ${tempDir}`)
     await io.mkdirP(tempDir)
